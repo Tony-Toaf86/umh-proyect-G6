@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="/parciales/estilos.css">
+    <link rel="stylesheet" href="estilos_menu.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main class="contenido-principal">
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Transforma el Mundo, <span>Un Voluntario a la Vez</span></h1>
+        <p>Gestiona proyectos sociales, coordina actividades comunitarias y mide el impacto real.</p>
+        <div class="hero-btns">
+            <a href="formularios/proyectos/index.html" class="btn-principal">Explorar Proyectos</a>
+            <a href="formularios/voluntarios/index.html" class="btn-secundario">Unirse como Voluntario</a>
+        </div>
+    </div>
+</section>
+
+<section class="estadisticas">
+    <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h3>+500</h3>
+        <p>Voluntarios Activos</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-folder-open"></i>
+        <h3>120</h3>
+        <p>Proyectos Finalizados</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-heart"></i>
+        <h3>+2k</h3>
+        <p>Beneficiarios</p>
+    </div>
+</section>
+
+<section class="galeria-proyectos">
+    <h2>Nuestras Áreas de Impacto</h2>
+    <div class="grid-imagenes">
+        <div class="imagen-card">
+            <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=500&q=80" alt="Educación">
+            <div class="overlay"><h3>Educación</h3></div>
+        </div>
+        <div class="imagen-card">
+            <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=500&q=80" alt="Alimentación">
+            <div class="overlay"><h3>Alimentación</h3></div>
+        </div>
+        <div class="imagen-card">
+            <img src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=500&q=80" alt="Salud">
+            <div class="overlay"><h3>Salud</h3></div>
+        </div>
+    </div>
+</section>
+    </main>
+    <div id="footer-container"></div>
+    <script>
+        async function cargarParcial(url, selector, contenedorId) { // Carga un fragmento hmll y lo inserta en el contenedor especificado
+            try {
+                const respuesta = await fetch(url);
+                if (!respuesta.ok) throw new Error(`No se pudo cargar ${url}`);
+
+                const html = await respuesta.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const nodo = doc.querySelector(selector);
+
+                document.getElementById(contenedorId).innerHTML = nodo
+                    ? nodo.outerHTML
+                    : html;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        cargarParcial('/parciales/header.html', 'header', 'header-container');
+        cargarParcial('/parciales/footer.html', 'footer', 'footer-container');
+    </script>
+</body>
+</html>

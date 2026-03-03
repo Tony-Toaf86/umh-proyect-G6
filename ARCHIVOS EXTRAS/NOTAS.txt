@@ -9,4 +9,4 @@ CUENTA = 202600750;
 };
 
 
-NOMBRE_DE_lA_BBDD = "semana4";
+NOMBRE_DE_lA_BBDD = "bbddg4";

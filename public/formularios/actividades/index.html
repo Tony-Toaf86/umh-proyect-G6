@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Actividades</title>
+	<link rel="stylesheet" href="/parciales/estilos.css">
+    <link rel="stylesheet" href="../estilos.css">
+</head>
+<body>
+	<div id="header-container"></div>
+
+	<main class="contenido-principal">
+		<h1>Gestión de Actividades</h1>
+	</main>
+
+
+<div class="container">
+   
+    <form id="actividadForm">
+        <div class="form-group">
+            <label for="proyecto_act">Proyecto:</label>
+            <select id="proyecto_act"></select>
+        </div>
+        <div class="form-group">
+            <label for="desc_act">Descripción:</label>
+            <textarea id="desc_act"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="fecha">Fecha y Hora:</label>F
+            <input type="datetime-local" id="fecha">
+        </div>
+        <div class="form-actions">
+            <button type="submit">Programar</button>
+            <button type="button" class="btn-listar">Ver Calendario</button>
+        </div>
+    </form> 
+    <div id="resultado"></div>
+</div>
+
+
+
+
+	<div id="footer-container"></div>
+
+	<script>
+		async function cargarParcial(url, selector, contenedorId) {
+			try {
+				const respuesta = await fetch(url);
+				if (!respuesta.ok) throw new Error(`No se pudo cargar ${url}`);
+
+				const html = await respuesta.text();
+				const doc = new DOMParser().parseFromString(html, 'text/html');
+				const nodo = doc.querySelector(selector);
+
+				document.getElementById(contenedorId).innerHTML = nodo
+					? nodo.outerHTML
+					: html;
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		cargarParcial('/parciales/header.html', 'header', 'header-container');
+		cargarParcial('/parciales/footer.html', 'footer', 'footer-container');
+	</script>
+</body>
+</html>

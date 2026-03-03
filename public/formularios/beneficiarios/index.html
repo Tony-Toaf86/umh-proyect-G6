@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Beneficiarios</title>
+	<link rel="stylesheet" href="/parciales/estilos.css">
+        <link rel="stylesheet" href="../estilos.css">
+
+</head>
+<body>
+	<div id="header-container"></div>
+
+	<main class="contenido-principal">
+		<h1>Gestión de Beneficiarios</h1>
+	</main>
+
+  
+<div class="container">
+    <form id="beneficiarioForm">
+        <div class="form-group">
+            <label for="nombre_ben">Nombre del Beneficiario:</label>
+            <input type="text" id="nombre_ben" required>
+        </div>
+        <div class="form-group">
+            <label for="proyecto_ben">Proyecto que le asiste:</label>
+            <select id="proyecto_ben"></select>
+        </div>
+        <div class="form-actions">
+            <button type="submit">Registrar</button>
+            <button type="button" class="btn-eliminar">Dar de Baja</button>
+            <button type="button" class="btn-listar">Listar Todos</button>
+        </div>
+    </form>
+    <div id="resultado"></div>
+</div>
+
+	<div id="footer-container"></div>
+
+	<script>
+		async function cargarParcial(url, selector, contenedorId) {
+			try {
+				const respuesta = await fetch(url);
+				if (!respuesta.ok) throw new Error(`No se pudo cargar ${url}`);
+
+				const html = await respuesta.text();
+				const doc = new DOMParser().parseFromString(html, 'text/html');
+				const nodo = doc.querySelector(selector);
+
+				document.getElementById(contenedorId).innerHTML = nodo
+					? nodo.outerHTML
+					: html;
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		cargarParcial('/parciales/header.html', 'header', 'header-container');
+		cargarParcial('/parciales/footer.html', 'footer', 'footer-container');
+	</script>
+</body>
+</html>
