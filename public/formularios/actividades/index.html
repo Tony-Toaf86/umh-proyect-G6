@@ -18,17 +18,24 @@
 <div class="container">
    
     <form id="actividadForm">
+		<input type="hidden" id="actividadId">
         <div class="form-group">
-            <label for="proyecto_act">Proyecto:</label>
-            <select id="proyecto_act"></select>
+			<label for="proyecto_id">Proyecto:</label>
+			<select id="proyecto_id" name="proyecto_id">
+				<option value="">Selecciona un proyecto</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="titulo">Titulo:</label>
+			<input type="text" id="titulo" name="titulo" maxlength="100">
         </div>
         <div class="form-group">
-            <label for="desc_act">Descripción:</label>
-            <textarea id="desc_act"></textarea>
+			<label for="descripcion">Descripcion:</label>
+			<textarea id="descripcion" name="descripcion"></textarea>
         </div>
         <div class="form-group">
-            <label for="fecha">Fecha y Hora:</label>F
-            <input type="datetime-local" id="fecha">
+			<label for="fecha_hora">Fecha y Hora:</label>
+			<input type="datetime-local" id="fecha_hora" name="fecha_hora">
         </div>
         <div class="form-actions">
             <button type="submit">Programar</button>

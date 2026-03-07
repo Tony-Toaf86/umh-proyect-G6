@@ -19,13 +19,22 @@
     <form id="proyectoForm">
         <input type="hidden" id="proyectoId">
         <div class="form-group">
-            <label for="nombre_proy">Nombre del Proyecto:</label>
-            <input type="text" id="nombre_proy" required>
+			<label for="nombre">Nombre del Proyecto:</label>
+			<input type="text" id="nombre" name="nombre" required>
+		</div>
+		<div class="form-group">
+			<label for="descripcion">Descripcion:</label>
+			<textarea id="descripcion" name="descripcion"></textarea>
+		</div>
+		<div class="form-group">
+			<label for="fecha_inicio">Fecha de Inicio:</label>
+			<input type="date" id="fecha_inicio" name="fecha_inicio">
         </div>
         <div class="form-group">
             <label for="organizacion_id">Organización Aliada:</label>
-            <select id="organizacion_id">
-                </select>
+			<select id="organizacion_id" name="organizacion_id">
+				<option value="">Selecciona una organizacion</option>
+			</select>
         </div>
         <div class="form-actions">
             <button type="submit">Guardar</button>
