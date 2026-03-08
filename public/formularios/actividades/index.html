@@ -38,8 +38,10 @@
 			<input type="datetime-local" id="fecha_hora" name="fecha_hora">
         </div>
         <div class="form-actions">
-            <button type="submit">Programar</button>
-            <button type="button" class="btn-listar">Ver Calendario</button>
+			<button type="submit">Guardar</button>
+			<button type="button" class="btn-actualizar">Actualizar</button>
+			<button type="button" class="btn-eliminar">Eliminar</button>
+			<button type="button" class="btn-listar">Listar</button>
         </div>
     </form> 
     <div id="resultado"></div>
@@ -71,5 +73,6 @@
 		cargarParcial('/parciales/header.html', 'header', 'header-container');
 		cargarParcial('/parciales/footer.html', 'footer', 'footer-container');
 	</script>
+	<script src="/formularios/actividades/actividades.js"></script>
 </body>
 </html>

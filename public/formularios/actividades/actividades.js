@@ -1,16 +1,18 @@
 (() => {
-    const form = document.getElementById('beneficiarioForm');
+    const form = document.getElementById('actividadForm');
     const resultado = document.getElementById('resultado');
 
     if (!form || !resultado) {
         return;
     }
 
-    const inputId = document.getElementById('beneficiarioId');
-    const inputNombre = document.getElementById('nombre_completo');
-    const inputEdad = document.getElementById('edad');
+    const inputId = document.getElementById('actividadId');
     const inputProyectoId = document.getElementById('proyecto_id');
+    const inputTitulo = document.getElementById('titulo');
+    const inputDescripcion = document.getElementById('descripcion');
+    const inputFechaHora = document.getElementById('fecha_hora');
 
+    const btnActualizar = form.querySelector('.btn-actualizar');
     const btnEliminar = form.querySelector('.btn-eliminar');
     const btnListar = form.querySelector('.btn-listar');
 
@@ -32,11 +34,40 @@
         resultado.innerHTML = `<p class="mensaje-${tipo}">${escaparHtml(mensaje)}</p>`;
     };
 
-    const cargarEnFormulario = (beneficiario) => {
-        inputId.value = beneficiario.id;
-        inputNombre.value = beneficiario.nombre_completo || '';
-        inputEdad.value = beneficiario.edad ?? '';
-        inputProyectoId.value = beneficiario.proyecto_id ?? '';
+    const convertirAInputDateTime = (valor) => {
+        if (!valor) {
+            return '';
+        }
+
+        const fecha = new Date(valor);
+        if (Number.isNaN(fecha.getTime())) {
+            return '';
+        }
+
+        const offset = fecha.getTimezoneOffset() * 60000;
+        const local = new Date(fecha.getTime() - offset);
+        return local.toISOString().slice(0, 16);
+    };
+
+    const formatearFecha = (valor) => {
+        if (!valor) {
+            return '-';
+        }
+
+        const fecha = new Date(valor);
+        if (Number.isNaN(fecha.getTime())) {
+            return escaparHtml(valor);
+        }
+
+        return fecha.toLocaleString('es-ES');
+    };
+
+    const cargarEnFormulario = (actividad) => {
+        inputId.value = actividad.id;
+        inputProyectoId.value = actividad.proyecto_id ?? '';
+        inputTitulo.value = actividad.titulo || '';
+        inputDescripcion.value = actividad.descripcion || '';
+        inputFechaHora.value = convertirAInputDateTime(actividad.fecha_hora);
     };
 
     const limpiarFormulario = () => {
@@ -53,32 +84,34 @@
         return proyecto.nombre || `#${proyecto.id}`;
     };
 
-    const renderizarListado = (beneficiarios) => {
-        if (!Array.isArray(beneficiarios) || !beneficiarios.length) {
-            resultado.innerHTML = '<p>No hay beneficiarios registrados.</p>';
+    const renderizarListado = (actividades) => {
+        if (!Array.isArray(actividades) || !actividades.length) {
+            resultado.innerHTML = '<p>No hay actividades registradas.</p>';
             return;
         }
 
-        const filas = beneficiarios.map((beneficiario) => `
+        const filas = actividades.map((actividad) => `
             <tr>
-                <td>${beneficiario.id}</td>
-                <td>${escaparHtml(beneficiario.nombre_completo)}</td>
-                <td>${escaparHtml(beneficiario.edad)}</td>
-                <td>${escaparHtml(obtenerNombreProyecto(beneficiario.proyecto_id))}</td>
+                <td>${actividad.id}</td>
+                <td>${escaparHtml(obtenerNombreProyecto(actividad.proyecto_id))}</td>
+                <td>${escaparHtml(actividad.titulo || '-')}</td>
+                <td>${escaparHtml(actividad.descripcion || '-')}</td>
+                <td>${formatearFecha(actividad.fecha_hora)}</td>
                 <td>
-                    <button type="button" class="btn-seleccionar" data-id="${beneficiario.id}">Seleccionar</button>
+                    <button type="button" class="btn-seleccionar" data-id="${actividad.id}">Seleccionar</button>
                 </td>
             </tr>
         `).join('');
 
         resultado.innerHTML = `
-            <table class="tabla-beneficiarios">
+            <table class="tabla-actividades">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Edad</th>
                         <th>Proyecto</th>
+                        <th>Titulo</th>
+                        <th>Descripcion</th>
+                        <th>Fecha y Hora</th>
                         <th>Accion</th>
                     </tr>
                 </thead>
@@ -108,25 +141,13 @@
     };
 
     const obtenerPayloadFormulario = () => {
-        const nombre_completo = normalizarTexto(inputNombre.value);
-        const edadTexto = normalizarTexto(inputEdad.value);
         const proyectoTexto = normalizarTexto(inputProyectoId.value);
-
-        if (!nombre_completo) {
-            throw new Error('El nombre completo es obligatorio');
-        }
-
-        if (!edadTexto) {
-            throw new Error('La edad es obligatoria');
-        }
+        const titulo = normalizarTexto(inputTitulo.value);
+        const descripcion = normalizarTexto(inputDescripcion.value);
+        const fecha_hora = normalizarTexto(inputFechaHora.value);
 
         if (!proyectoTexto) {
             throw new Error('Selecciona un proyecto');
-        }
-
-        const edad = Number(edadTexto);
-        if (!Number.isInteger(edad) || edad < 0) {
-            throw new Error('La edad debe ser un numero entero mayor o igual a 0');
         }
 
         const proyecto_id = Number(proyectoTexto);
@@ -134,10 +155,15 @@
             throw new Error('Selecciona un proyecto valido');
         }
 
+        if (!titulo) {
+            throw new Error('El titulo es obligatorio');
+        }
+
         return {
-            nombre_completo,
-            edad,
-            proyecto_id
+            proyecto_id,
+            titulo,
+            descripcion,
+            fecha_hora
         };
     };
 
@@ -159,18 +185,18 @@
         `;
     };
 
-    const listarBeneficiarios = async () => {
+    const listarActividades = async () => {
         try {
-            const response = await fetch('/api/beneficiarios');
-            const beneficiarios = await manejarRespuesta(response);
-            renderizarListado(beneficiarios);
+            const response = await fetch('/api/actividades');
+            const actividades = await manejarRespuesta(response);
+            renderizarListado(actividades);
         } catch (error) {
             mostrarMensaje(error.message, 'error');
         }
     };
 
-    const obtenerBeneficiarioPorId = async (id) => {
-        const response = await fetch(`/api/beneficiarios/${id}`);
+    const obtenerActividadPorId = async (id) => {
+        const response = await fetch(`/api/actividades/${id}`);
         return manejarRespuesta(response);
     };
 
@@ -178,52 +204,69 @@
         event.preventDefault();
 
         try {
-            const id = Number(inputId.value);
             const payload = obtenerPayloadFormulario();
-            const esEdicion = Number.isInteger(id) && id > 0;
-            const endpoint = esEdicion ? `/api/beneficiarios/${id}` : '/api/beneficiarios';
-            const metodo = esEdicion ? 'PUT' : 'POST';
-
-            const response = await fetch(endpoint, {
-                method: metodo,
+            const response = await fetch('/api/actividades', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
             await manejarRespuesta(response);
-            mostrarMensaje(
-                esEdicion
-                    ? 'Beneficiario actualizado correctamente'
-                    : 'Beneficiario guardado correctamente',
-                'ok'
-            );
+            mostrarMensaje('Actividad programada correctamente', 'ok');
             limpiarFormulario();
-            await listarBeneficiarios();
+            await listarActividades();
         } catch (error) {
             mostrarMensaje(error.message, 'error');
         }
     });
+
+    if (btnActualizar) {
+        btnActualizar.addEventListener('click', async () => {
+            const id = Number(inputId.value);
+
+            if (!Number.isInteger(id) || id <= 0) {
+                mostrarMensaje('Selecciona una actividad para actualizar', 'error');
+                return;
+            }
+
+            try {
+                const payload = obtenerPayloadFormulario();
+                const response = await fetch(`/api/actividades/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                await manejarRespuesta(response);
+                mostrarMensaje('Actividad actualizada correctamente', 'ok');
+                limpiarFormulario();
+                await listarActividades();
+            } catch (error) {
+                mostrarMensaje(error.message, 'error');
+            }
+        });
+    }
 
     if (btnEliminar) {
         btnEliminar.addEventListener('click', async () => {
             const id = Number(inputId.value);
 
             if (!Number.isInteger(id) || id <= 0) {
-                mostrarMensaje('Selecciona un beneficiario para eliminar', 'error');
+                mostrarMensaje('Selecciona una actividad para eliminar', 'error');
                 return;
             }
 
-            const confirmar = window.confirm(`Se eliminara el beneficiario #${id}. Deseas continuar?`);
+            const confirmar = window.confirm(`Se eliminara la actividad #${id}. Deseas continuar?`);
             if (!confirmar) {
                 return;
             }
 
             try {
-                const response = await fetch(`/api/beneficiarios/${id}`, { method: 'DELETE' });
+                const response = await fetch(`/api/actividades/${id}`, { method: 'DELETE' });
                 await manejarRespuesta(response);
-                mostrarMensaje('Beneficiario eliminado correctamente', 'ok');
+                mostrarMensaje('Actividad eliminada correctamente', 'ok');
                 limpiarFormulario();
-                await listarBeneficiarios();
+                await listarActividades();
             } catch (error) {
                 mostrarMensaje(error.message, 'error');
             }
@@ -231,7 +274,7 @@
     }
 
     if (btnListar) {
-        btnListar.addEventListener('click', listarBeneficiarios);
+        btnListar.addEventListener('click', listarActividades);
     }
 
     resultado.addEventListener('click', async (event) => {
@@ -242,14 +285,14 @@
 
         const id = Number(boton.dataset.id);
         if (!Number.isInteger(id) || id <= 0) {
-            mostrarMensaje('ID de beneficiario invalido', 'error');
+            mostrarMensaje('ID de actividad invalido', 'error');
             return;
         }
 
         try {
-            const beneficiario = await obtenerBeneficiarioPorId(id);
-            cargarEnFormulario(beneficiario);
-            mostrarMensaje(`Beneficiario #${id} cargado en el formulario`, 'ok');
+            const actividad = await obtenerActividadPorId(id);
+            cargarEnFormulario(actividad);
+            mostrarMensaje(`Actividad #${id} cargada en el formulario`, 'ok');
         } catch (error) {
             mostrarMensaje(error.message, 'error');
         }
@@ -258,7 +301,7 @@
     (async () => {
         try {
             await cargarProyectos();
-            await listarBeneficiarios();
+            await listarActividades();
         } catch (error) {
             mostrarMensaje(error.message, 'error');
         }
